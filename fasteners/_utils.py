@@ -36,7 +36,15 @@ except (ImportError, AttributeError):
 
 import six
 
-from monotonic import monotonic as now  # noqa
+try:
+    from monotonic import monotonic as now  # noqa
+except RuntimeError:
+    # monotonic doesn't find a monotonic clock on HP-UX, and there's
+    # no way to patch it, so just use regular time.
+    if sys.platform.startswith('hp-ux'):
+        from time import time as now
+    else:
+        raise
 
 # log level for low-level debugging
 BLATHER = 5
